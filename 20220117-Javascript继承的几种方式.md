@@ -38,7 +38,7 @@ console.log(son2.name);// son2
 
 ## 组合继承
 
-双截棍 + 龙拳 = 霍元甲。
+结合前两者，双截棍 + 龙拳 = 霍元甲。
 
 ```JavaScript
 function Parent(name){
@@ -95,30 +95,6 @@ console.log(son1.Say()); // son1
 console.log(son2.Say()); // son2
 ```
 
-## 寄生组合式继承
-
-```JavaScript
-function Parent(name){
-  this.name = name;
-}
-Parent.prototype.Say = function(){
-  console.log(this.name);
-}
-function Son(name){
-  Parent.call(this,name);
-}
-// 以下两行体现寄生组合式继承与组合式继承的区别
-// Parent.prototype 相当于寄生在原型链上了
-Son.prototype = Object.create(Parent.prototype);
-Son.prototype.constructor = Son
-
-son1 = new Son('son1');
-son2 = new Son('son2');
-
-console.log(son1.Say()); // son1
-console.log(son2.Say()); // son2
-```
-
 ## ES6 继承
 
 ```JavaScript
@@ -143,6 +119,15 @@ class Son extends Parent {
 }
 
 const son = new Son('son');
+```
+
+## 各种继承的关键代码
+
+```JavaScript
+Son.prototype = new Parent(); // 原型链继承
+Parent.call(this, name); // 借用构造函数继承
+const me = Object.create(person); // 原型式继承
+Son.prototype = Object.create(Parent.prototype); // 寄生组合式继承
 ```
 
 ES6 的 extends 被编译成寄生组合式继承。C++/Java 继承的最终效果至少相当于 JavaScript 的组合式继承。
