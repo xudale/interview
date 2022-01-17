@@ -145,7 +145,7 @@ class Son extends Parent {
 const son = new Son('son');
 ```
 
-ES6 的 extends 被编译成寄生组合式继承。C++/Java 继承的最终效果至少相当于 JavaScript 的组合式继承。此外，现实中还见过使用 Object.assign 来实现继承的效果。
+ES6 的 extends 被编译成寄生组合式继承。C++/Java 继承的最终效果至少相当于 JavaScript 的组合式继承。
 
 
 
