@@ -127,6 +127,7 @@ Promise.all(obj).then(char => {
 ## 参考
 
 1.[Promise.all()](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)
+
 2.[致全网那些所谓的手写Promise.all](https://zhuanlan.zhihu.com/p/362648760)
 
 
