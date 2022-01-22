@@ -14,6 +14,7 @@ Promise.all = function(iterable) {
 				const resultList = new Array(promiseList.length)
 				let count = 0
 				promiseList.forEach((promise, i) => {
+					// 包一层
 					Promise.resolve(promise).then(result => {
 						resultList[i] = result
 						if (++count == promiseList.length) {
@@ -123,6 +124,29 @@ Promise.all(obj).then(char => {
 })
 // 类数组不是 iterable，要报错
 ```
+
+在 Promise.all 的基础上，实现 Promise.race 就比较容易了。
+
+```JavaScript
+Promise.race = function(iterable) {
+	if (iterable != null && typeof iterable[Symbol.iterator] == 'function') {
+		const promiseList = [...iterable]
+		return new Promise((resolve, reject) => {
+			promiseList.forEach(promise => {
+				Promise.resolve(promise).then(res => {
+					resolve(res)
+				}, reason => {
+					reject(reason)
+				})
+			}) 
+		})
+	} else {
+		throw `${iterable} is not iterable`
+	}
+}
+```
+
+比较新的方法还是 Promise.allSettled 和 Promise.any。Promise.any 的逻辑和 Promise.all 完全相反，它们的关系类似数组的 every 和 some。
 
 ## 参考
 
