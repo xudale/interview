@@ -98,17 +98,17 @@ Promise.all('abc').then(char => {
 // ['a', 'b', 'c']
 ```
 
-网上众多实现里面，大多没有考虑参数是 iterable。为了加深记忆，下面贴一段 V8 源码：
+网上众多实现里面，大多没有考虑 Promise.all 参数是 iterable 对象。为了加深记忆，下面贴一段 V8 源码：
 
 ```C++
-transitioning macro PerformPromiseAll<F1: type, F2: type>(
-    implicit context: Context)(
-    // iter 参数，是个 iterable 对象
-    nativeContext: NativeContext, iter: iterator::IteratorRecord,
-    constructor: Constructor, capability: PromiseCapability,
-    promiseResolveFunction: JSAny, createResolveElementFunctor: F1,
-    createRejectElementFunctor: F2): JSAny labels
-Reject(Object) {}
+// ES#sec-promise.all
+transitioning javascript builtin PromiseAll(
+    js-implicit context: Context, receiver: JSAny)(iterable: JSAny): JSAny {
+  return GeneratePromiseAll(
+  	  // iterable 参数，是个 iterable 对象
+      receiver, iterable, PromiseAllResolveElementFunctor{},
+      PromiseAllRejectElementFunctor{});
+}
 ```
 
 ```JavaScript
