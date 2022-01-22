@@ -130,6 +130,8 @@ Promise.all(obj).then(char => {
 
 2.[致全网那些所谓的手写Promise.all](https://zhuanlan.zhihu.com/p/362648760)
 
+3.[Checking whether something is iterable](https://stackoverflow.com/questions/18884249/checking-whether-something-is-iterable)
+
 
 
 
