@@ -7,7 +7,7 @@
 
 ```JavaScript
 Promise.all = function(iterable) {
-	if (Symbol.iterator in Object(iterable)) {
+	if (iterable != null && typeof iterable[Symbol.iterator] == 'function') {
 		const promiseList = [...iterable]
 		return new Promise((resolve, reject) => {
 			if (promiseList.length) {
@@ -24,16 +24,16 @@ Promise.all = function(iterable) {
 					})
 				})	
 			} else {
-
 				resolve([])
 			}	
 		})
+	} else {
+		throw `${iterable} is not iterable`	
 	}
-	throw `${iterable} is not iterable`
 }
 ```
 
-> 但是，Promise.all 当且仅当传入的可迭代对象为空时为同步：
+Promise.all 当且仅当传入的可迭代对象为空时为同步：
 
 ```JavaScript
 var p = Promise.all([]); // will be immediately resolved
@@ -96,6 +96,32 @@ Promise.all('abc').then(char => {
 })
 // logs
 // ['a', 'b', 'c']
+```
+
+网上众多实现里面，大多没有考虑参数是 iterable。为了加深记忆，下面贴一段 V8 源码：
+
+```C++
+transitioning macro PerformPromiseAll<F1: type, F2: type>(
+    implicit context: Context)(
+    // iter 参数，是个 iterable 对象
+    nativeContext: NativeContext, iter: iterator::IteratorRecord,
+    constructor: Constructor, capability: PromiseCapability,
+    promiseResolveFunction: JSAny, createResolveElementFunctor: F1,
+    createRejectElementFunctor: F2): JSAny labels
+Reject(Object) {}
+```
+
+```JavaScript
+const obj = {
+	0: 1,
+	1: 2,
+	length: 2
+}
+
+Promise.all(obj).then(char => {
+	console.log(char)
+})
+// 类数组不是 iterable，要报错
 ```
 
 ## 参考
