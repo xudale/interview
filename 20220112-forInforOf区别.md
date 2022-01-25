@@ -1,6 +1,6 @@
 # 20220112-forInforOf区别
 
-我又答错了，工作中很少用到。for in 和 for of 放在一起比较真的合适吗？业务代码中没见过用 for in 遍历数组，也没见过用 for of 遍历对象。如果 for of 当初不叫 for of，而是起另一个和 for 没有任何联系的名字，如 getIteratorOf，可能就不会出现这道面试题了。
+我答错了，工作中很少用到。for in 和 for of 放在一起比较真的合适吗？业务代码中没见过用 for in 遍历数组，也没见过用 for of 遍历对象。如果 for of 当初不叫 for of，而是起另一个和 for 没有任何联系的名字，如 getIteratorOf，可能就不会出现这道面试题了。
 
 ## 问题
 
@@ -67,6 +67,10 @@ for (const value of iterable) {
   console.log(value);
 } // 打印 3、4、5、6、7、8、9
 ```
+
+## 总结
+
+for in 遍历 key，for of 的结果取决于迭代器，二者没什么联系。
 
 ## 参考
 
