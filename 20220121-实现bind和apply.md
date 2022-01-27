@@ -1,4 +1,4 @@
-# 20220121-实现bind和apply
+# 20220121-实现 bind 和 apply
 
 ```JavaScript
 Function.prototype.call = function(thisArg, ...args) {

@@ -1,4 +1,4 @@
-# 20220117-实现instanceof
+# 20220117-实现 instanceof
 
 ```JavaScript
 // 1.typeof 记少不记多，typeof null == 'object'; typeof console.log == 'function'

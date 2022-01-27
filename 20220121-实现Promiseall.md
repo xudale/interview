@@ -1,4 +1,4 @@
-# 20220121-实现Promise.all
+# 20220121-实现 Promise.all
 
 在业务代码中 Promise.all 我用过 1-2 次，写完之后觉得可读性较差，后来通过 async 函数里面连续使用多个 await 重构了。在这场面试之前，从来没手写过 Promise.all，MDN 文档也没看过。能写出来个大概，我还是比较满意的。我在面试时手写的 Promise.all 不足之处有：
 
