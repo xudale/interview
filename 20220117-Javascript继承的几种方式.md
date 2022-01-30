@@ -1,6 +1,6 @@
 # 20220117-Javascript 继承的几种方式
 
-我比较讨厌这个问题，原因是 C++/Java 实现继承的方式只有一种，Javascript 有 N 种(N > 5)。而且这 N 种实现继承的方式里，最常用最实用的是和 C++/Java 相似的那种继承。其它的继承方式，尤其是在 ES6 class 关键词出现后，几乎用不上。工作中用的是巧克力(class)，面试时却问屎的味道(借用构造函数继承、原型式继承等)，忆屎思甜。
+我比较讨厌这个问题，原因是 C++/Java 实现继承的方式只有一种，Javascript 有 N 种(N > 5)。而且这 N 种实现继承的方式里，最常用最实用的是和 C++/Java 相似的那种继承。其它的继承方式，尤其是在 ES6 class 关键词出现后，几乎用不上。所以这是一道背诵题，考察每一种继承的写法分别叫什么名字。
 
 全文参考红宝书第三版 6.3 节。
 
@@ -15,6 +15,7 @@ Parent.prototype.Say = function(){
   console.log(this.share);
 }
 function Son(){};
+// 原型链继承的关键代码
 Son.prototype = new Parent();
 son1 = new Son();
 son1.Say();
@@ -23,10 +24,11 @@ son1.Say();
 ## 借用构造函数继承
 
 ```JavaScript
-function Parent(name){
+function Parent(name) {
   this.name = name;
 }
-function Son(name){
+function Son(name) {
+  // 借用构造函数继承的关键代码
   Parent.call(this, name);
 }
 // 缺点：只继承的属性，没继承到方法
@@ -38,7 +40,7 @@ console.log(son2.name);// son2
 
 ## 组合继承
 
-结合前两者，双截棍 + 龙拳 = 霍元甲。
+结合前两者。
 
 ```JavaScript
 function Parent(name){
