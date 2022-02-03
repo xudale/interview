@@ -1,6 +1,6 @@
 # 20220121-实现 Promise.all
 
-在业务代码中 Promise.all 我用过 1-2 次，写完之后觉得可读性较差，后来通过 async 函数里面连续使用多个 await 重构了。在这场面试之前，从来没手写过 Promise.all，MDN 文档也没看过。能写出来个大概，我还是比较满意的。我在面试时手写的 Promise.all 不足之处有：
+在业务代码中我用过 Promise.all 1-2 次，写完之后觉得可读性较差，后来通过 async 函数里面多个 await 重构了。在面试之前，没手写过 Promise.all，也没看过 MDN 文档。能写出来个大概，我还是比较满意的。我在面试时手写的 Promise.all 不足之处有：
 
 - 只考虑 all 参数为数组的情况，事实上 all 接收的参数是可迭代对象，包括数组、字符串和 Set 等
 - 没有考虑可迭代对象为空的情况，比如空数组，应同步改变 promise 的状态
@@ -88,7 +88,7 @@ p.then(values => {
 ```
 
 ```JavaScript
-
+// 字符串也是 iterable
 Promise.all('abc').then(char => {
 	console.log(char)
 })
