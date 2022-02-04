@@ -29,22 +29,22 @@ Function.prototype.apply = function(thisArg, args) {
 
 ```JavaScript
 Function.prototype.apply = function(thisArg, args) {
-	if (args !== undefined && !Array.isArray(args)) {
+	if (args != null && !Array.isArray(args)) {
 		throw('args must be array')
 	}
 	thisArg = thisArg || window
-	thisArg.fn = this
-	let result
+	const fnSymbol = Symbol('fn')
+	thisArg[fnSymbol] = this
+	let result 
 	if (args) {
-		args = args.map((item, i) => `args[${i}]`)
+		const args1 = args.map((item, i) => `args[${i}]`)
 		// 此时 args 是 ['args[0]', 'args[1]', 'args[2]']
-		// `thisArg.fn(${args})` 是 thisArg.fn(args[0],args[1],args[2])
-		const result = eval(`thisArg.fn(${args})`)
-
+		// `thisArg[fnSymbol](${args1})` 是 thisArg[fnSymbol](args[0],args[1],args[2])
+		result = eval(`thisArg[fnSymbol](${args1})`)
 	} else {
-		result = thisArg.fn()
+		result = thisArg[fnSymbol]()
 	}
-	delete thisArg.fn
+	delete thisArg[fnSymbol]
 	return result
 }
 ```
@@ -52,6 +52,8 @@ Function.prototype.apply = function(thisArg, args) {
 ## 参考
 
 1.[js 实现call和apply方法，超详细思路分析](https://www.cnblogs.com/echolun/p/12144344.html)
+
+2.[Implement your own — call(), apply() and bind() method in JavaScript](https://medium.com/@ankur_anand/implement-your-own-call-apply-and-bind-method-in-javascript-42cc85dba1b)
 
 
 
