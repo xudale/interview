@@ -6,6 +6,8 @@
 
 for in 和 for of 有什么区别？
 
+## 答案
+
 for in 遍历属性，for of 遍历值。区别如下：
 
 ```JavaScript
