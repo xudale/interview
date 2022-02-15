@@ -73,6 +73,7 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
 
 export function nextTick (cb?: Function, ctx?: Object) {
   let _resolve
+  // 向 callbacks 中插入任务
   callbacks.push(() => {
     if (cb) {
       try {
@@ -98,7 +99,7 @@ export function nextTick (cb?: Function, ctx?: Object) {
 
 ```
 
-源码很简单，记录几个变量的意义：
+源码很简单，记录几个变量的含义：
 
 - callbacks：任务队列
 - nextTick：向 callbacks 插入一个任务
@@ -133,7 +134,7 @@ setTimeout(_ => {
 }, 5000)
 ```
 
-改变 3 次 vm.message 后，调用了 1 次渲染函数。
+改变 3 次 vm.message 后，渲染函数异步执行，调用了 1 次渲染函数。
 
 vm.message = 'changed 1' 时，[defineReactive](https://github.com/vuejs/vue/blob/v2.6.10/src/core/observer/index.js#L135) 中的 dep.notify 通知 Watcher 更新，[源码如下](https://github.com/vuejs/vue/blob/v2.6.10/src/core/observer/watcher.js#L164)：
 
@@ -189,7 +190,7 @@ export function queueWatcher (watcher: Watcher) {
 }
 ```
 
-queueWatcher 的逻辑，取 Watcher 对象的 id，判断之前是否有加入过 has 对象，如果没有，has[id] = true。queue 是一个数组，queue.push(watcher) 将 watcher 插入 queue。flushSchedulerQueue 的功能是执行 queue 是所有的 Watcher 对象。最后 nextTick(flushSchedulerQueue)，在下一个 microtask，执行渲染函数，更新界面。
+queueWatcher 函数取 Watcher 对象的 id，判断 has 对象是否有这个 id，如果没有，has[id] = true，并 queue.push(watcher) 将 watcher 插入 queue。flushSchedulerQueue 的功能是执行 queue 是所有的 Watcher 对象。最后 nextTick(flushSchedulerQueue)，在下一个 microtask，执行 queue 中所有 Watcher(包括渲染函数)，更新界面。
 
 scheduler.js 中的代码与 next-tick.js 中的代码逻辑相似度达 50。盘点下 scheduler.js 中的几个变量：
 
@@ -199,8 +200,7 @@ scheduler.js 中的代码与 next-tick.js 中的代码逻辑相似度达 50。�
 
 三次改变 vm.message 的值，意味调用了 3 次 queueWatcher(this)。但只有第一次的调用，向 queue 中插入了 Watcher，另外两次调用，被 if (has[id] == null) 拦掉了。所以 queue 中只有 1 个 Watcher 对象，渲染函数只执行 1 次。
 
-渲染函数如下：
-
+本文示例渲染函数如下：
 
 ```C++
 (function anonymous() {
