@@ -47,7 +47,7 @@ for (const value of iterable) {
 ```JavaScript
 const iterable = {
 	i: 3,
-	[Symbol.iterator] () {
+	[Symbol.iterator] () { 
 		return {
 			next: _ => {
 				if (this.i < 10) {
