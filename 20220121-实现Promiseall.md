@@ -13,30 +13,30 @@
 
 ```JavaScript
 Promise.all = function(iterable) {
-	if (iterable != null && typeof iterable[Symbol.iterator] == 'function') {
-		const promiseList = [...iterable]
-		return new Promise((resolve, reject) => {
-			if (promiseList.length) {
-				const resultList = new Array(promiseList.length)
-				let count = 0
-				promiseList.forEach((promise, i) => {
-					// 包一层
-					Promise.resolve(promise).then(result => {
-						resultList[i] = result
-						if (++count == promiseList.length) {
-							resolve(resultList)
-						}
-					}, reason => {
-						reject(reason)
-					})
-				})	
-			} else {
-				resolve([])
-			}	
-		})
-	} else {
-		throw `${iterable} is not iterable`	
-	}
+  if (iterable != null && typeof iterable[Symbol.iterator] == 'function') {
+    const promiseList = [...iterable]
+    return new Promise((resolve, reject) => {
+      if (promiseList.length) {
+        const resultList = new Array(promiseList.length)
+        let count = 0
+        promiseList.forEach((promise, i) => {
+          // 包一层
+          Promise.resolve(promise).then(result => {
+            resultList[i] = result
+            if (++count == promiseList.length) {
+              resolve(resultList)
+            }
+          }, reason => {
+            reject(reason)
+          })
+        })	
+      } else {
+        resolve([])
+      }	
+    })
+  } else {
+    throw `${iterable} is not iterable`	
+  }
 }
 ```
 
@@ -48,8 +48,8 @@ var p2 = Promise.all([1337, "hi"]); // non-promise values will be ignored, but t
 console.log(p);
 console.log(p2)
 setTimeout(function(){
-    console.log('the stack is now empty');
-    console.log(p2);
+  console.log('the stack is now empty');
+  console.log(p2);
 });
 
 // logs
@@ -63,31 +63,30 @@ setTimeout(function(){
 
 ```JavaScript
 const iterableObj = {
-	localArray: [1, Promise.resolve(2)],
-	[Symbol.iterator]() {
-		let start = 0
-		return {
-			next: _ => {
-				if (this.localArray.length == start) {
-					return {
-						done: true
-					}
-				} else {
-					return {
-						done: false,
-						value: this.localArray[start++]
-					}	
-				}
-				
-			}
-		}
-	}
+  localArray: [1, Promise.resolve(2)],
+  [Symbol.iterator]() {
+    let start = 0
+    return {
+      next: _ => {
+        if (this.localArray.length == start) {
+          return {
+            done: true
+          }
+        } else {
+          return {
+            done: false,
+            value: this.localArray[start++]
+          }	
+        }
+      }
+    }
+  }
 }
 
 const p = Promise.all(iterableObj)
 
 p.then(values => {
-	console.log(values)
+  console.log(values)
 })
 // logs
 // [1, 2]
@@ -96,10 +95,10 @@ p.then(values => {
 ```JavaScript
 // 字符串也是 iterable
 Promise.all('abc').then(char => {
-	console.log(char)
+  console.log(char)
 })
 .catch(_ => {
-	console.log('fail')
+  console.log('fail')
 })
 // logs
 // ['a', 'b', 'c']
@@ -110,23 +109,23 @@ Promise.all('abc').then(char => {
 ```C++
 // ES#sec-promise.all
 transitioning javascript builtin PromiseAll(
-    js-implicit context: Context, receiver: JSAny)(iterable: JSAny): JSAny {
+  js-implicit context: Context, receiver: JSAny)(iterable: JSAny): JSAny {
   return GeneratePromiseAll(
-  	  // iterable 参数，是个 iterable 对象
-      receiver, iterable, PromiseAllResolveElementFunctor{},
-      PromiseAllRejectElementFunctor{});
+    // iterable 参数，是个 iterable 对象
+    receiver, iterable, PromiseAllResolveElementFunctor{},
+    PromiseAllRejectElementFunctor{});
 }
 ```
 
 ```JavaScript
 const obj = {
-	0: 1,
-	1: 2,
-	length: 2
+  0: 1,
+  1: 2,
+  length: 2
 }
 
 Promise.all(obj).then(char => {
-	console.log(char)
+  console.log(char)
 })
 // 类数组不是 iterable，要报错
 ```
@@ -135,20 +134,20 @@ Promise.all(obj).then(char => {
 
 ```JavaScript
 Promise.race = function(iterable) {
-	if (iterable != null && typeof iterable[Symbol.iterator] == 'function') {
-		const promiseList = [...iterable]
-		return new Promise((resolve, reject) => {
-			promiseList.forEach(promise => {
-				Promise.resolve(promise).then(res => {
-					resolve(res)
-				}, reason => {
-					reject(reason)
-				})
-			}) 
-		})
-	} else {
-		throw `${iterable} is not iterable`
-	}
+  if (iterable != null && typeof iterable[Symbol.iterator] == 'function') {
+    const promiseList = [...iterable]
+    return new Promise((resolve, reject) => {
+      promiseList.forEach(promise => {
+        Promise.resolve(promise).then(res => {
+          resolve(res)
+        }, reason => {
+          reject(reason)
+        })
+      }) 
+    })
+  } else {
+    throw `${iterable} is not iterable`
+  }
 }
 ```
 
