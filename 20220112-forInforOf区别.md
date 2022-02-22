@@ -46,23 +46,23 @@ for (const value of iterable) {
 
 ```JavaScript
 const iterable = {
-	i: 3,
-	[Symbol.iterator] () { 
-		return {
-			next: _ => {
-				if (this.i < 10) {
-					return {
-						done: false,
-						value: this.i++
-					}
-				} else {
-					return {
-						done: true
-					}
-				}
-			}
-		}
-	}
+  i: 3,
+  [Symbol.iterator] () { 
+    return {
+      next: _ => {
+        if (this.i < 10) {
+          return {
+            done: false,
+            value: this.i++
+          }
+        } else {
+          return {
+            done: true
+          }
+        }
+      }
+    }
+  }
 };
 
 for (const value of iterable) {
