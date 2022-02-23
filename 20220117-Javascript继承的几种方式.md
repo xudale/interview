@@ -101,23 +101,23 @@ console.log(son2.Say()); // son2
 
 ```JavaScript
 class Parent {
-    constructor(name) {
-        this.name = name
-    }
-    Say() {
-        console.log(this.name);
-    }
+  constructor(name) {
+    this.name = name
+  }
+  Say() {
+    console.log(this.name);
+  }
 }
 
 // extends 相当于原型链继承
 class Son extends Parent {
-    constructor(name) {
-        // 相当于借用构造函数继承
-        super(name)
-    }
-    Speak() {
-        console.log(this.name);
-    }
+  constructor(name) {
+    // 相当于借用构造函数继承
+    super(name)
+  }
+  Speak() {
+    console.log(this.name);
+  }
 }
 
 const son = new Son('son');
