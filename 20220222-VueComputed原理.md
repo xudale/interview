@@ -310,6 +310,10 @@ function createComputedGetter (key) {
 }
 ```
 
+## 总结
+
+![computedWatcher2](https://raw.githubusercontent.com/xudale/interview/master/assets/computedWatcher2.jpeg)
+
 ## 参考
 
 1.[Vue.js 技术揭秘](https://ustbhuangyi.github.io/vue-analysis/)
