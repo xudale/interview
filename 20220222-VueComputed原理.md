@@ -257,7 +257,7 @@ function createComputedGetter (key) {
 
 依赖收集完成，如下图：
 
-![computedWatcher](https://raw.githubusercontent.com/xudale/interview/master/assets/computedWatcher.jpeg)
+![computedWatcher](https://raw.githubusercontent.com/xudale/interview/master/assets/computedWatcher.jpg)
 
 
 ## 运行时
