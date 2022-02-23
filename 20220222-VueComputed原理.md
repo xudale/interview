@@ -303,7 +303,7 @@ function createComputedGetter (key) {
       if (Dep.target) {
         watcher.depend()
       }
-      // 返回 vm.fullString 的结果
+      // 返回 vm.fullString 的结果 
       return watcher.value
     }
   }
