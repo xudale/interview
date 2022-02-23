@@ -1,6 +1,6 @@
 # 20220223-type和interface的区别
 
-这是一道背诵题，笼统的说，interface 声明类型，type 给类型起别名，类似 C/C++ 的 typedef。type 和 interface 的主要区别在于 type 可以给类型取别名。
+失业期间遇到的唯一一道和 typescript 的题目。这是一道背诵题，笼统的说，interface 声明类型，type 给类型起别名，类似 C/C++ 的 typedef。type 和 interface 的主要区别在于 type 可以给类型取别名。
 
 ## 问题
 
@@ -34,6 +34,11 @@ type Employee = Developer & Tester
 
 ```C++
 type App = [name: string, type: 'mobile' | 'web' | 'desktop']
+```
+
+```C++
+const three = 3;
+type B = typeof three;
 ```
 
 interface 可以声明合并。
