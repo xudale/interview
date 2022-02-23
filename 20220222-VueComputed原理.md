@@ -312,7 +312,7 @@ function createComputedGetter (key) {
 
 ## 总结
 
-![computedWatcher2](https://raw.githubusercontent.com/xudale/interview/master/assets/computedWatcher2.jpeg)
+![computedWatcher3](https://raw.githubusercontent.com/xudale/interview/master/assets/computedWatcher3.jpeg)
 
 ## 参考
 
