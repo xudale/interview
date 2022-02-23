@@ -4,15 +4,15 @@
 // 1.typeof 记少不记多，特殊的就两个：typeof null == 'object'; typeof console.log == 'function'
 // 2.非对象调用 instanceof 返回 false，Object.getPrototypeOf(1) 是返回原型的
 function myInstanceof(child, parent) {
-	if (['object', 'function'].includes(typeof child)) {
-		while(child) {
-			child = Object.getPrototypeOf(child)
-			if (child == parent.prototype) {
-				return true
-			}
-		}	
-	}
-	return false
+  if (['object', 'function'].includes(typeof child)) {
+    while(child) {
+      child = Object.getPrototypeOf(child)
+      if (child == parent.prototype) {
+        return true
+      }
+    }	
+  }
+  return false
 }
 ```
 
@@ -20,9 +20,9 @@ function myInstanceof(child, parent) {
 
 ```JavaScript
 class Test {
-	static [Symbol.hasInstance](x) {
-		return true
-	}
+  static [Symbol.hasInstance](x) {
+    return true
+  }
 }
 ```
 
@@ -37,7 +37,7 @@ myInstanceof(1, Test) // false
 
 ```JavaScript
 function myInstanceof(child, parent) {
-	return parent[Symbol.hasInstance](child)
+  return parent[Symbol.hasInstance](child)
 }
 ```
 
