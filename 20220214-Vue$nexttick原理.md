@@ -1,8 +1,8 @@
-# 20220214-Vue$nexttick原理
+# 20220214-Vue $nexttick 原理
 
 Vue 源码版本 2.6.10。
 
-失业期间目前面试 6 家，出现 3 次，出现概率 50%。
+失业期间目前面试 7 家，出现 3 次，出现概率 42.85%。
 
 ## [源码](https://github.com/vuejs/vue/blob/v2.6.10/src/core/util/next-tick.js)
 
@@ -214,6 +214,12 @@ scheduler.js 中的代码与 next-tick.js 中的代码逻辑相似度达 50。�
   }
 })
 ```
+
+## 参考
+
+1.[Vue.js 技术揭秘](https://ustbhuangyi.github.io/vue-analysis/)
+
+2.[Vue.js 中文文档](https://cn.vuejs.org/v2/guide/)
 
 
 
