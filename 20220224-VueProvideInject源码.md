@@ -8,10 +8,8 @@
 const count = 3
 
 while(count--) {
-
-	面试官：用过 provide/inject 吗？
-
-	我：没用过	
+  面试官：用过 provide/inject 吗？
+  我：没用过	
 }
 ```
 
@@ -185,6 +183,10 @@ export function initInjections (vm: Component) {
 ```
 
 遍历 resolveInject 返回的对象，每一个 key 都调用 defineReactive，从此子组件 vm.fromParent 有了 getter 和 setter。
+
+## 总结
+
+![provideInject](https://raw.githubusercontent.com/xudale/interview/master/assets/provideInject.jpeg)
 
 
 
