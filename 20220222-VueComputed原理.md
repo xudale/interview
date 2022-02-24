@@ -48,7 +48,7 @@ function initComputed (vm: Component, computed: Object) {
       computedWatcherOptions // { lazy: true }
     )
     if (!(key in vm)) {
-      // vm 上添加 name 为 fullString 的 getter
+      // vm 上添加名称为 fullString 的 getter
       defineComputed(vm, key, userDef)
     }
   }
@@ -58,7 +58,7 @@ function initComputed (vm: Component, computed: Object) {
 initComputed 做了两件事：
 
 - new Watcher：创建 lazy watcher
-- defineComputed：vm 上添加 name 为 fullString 的 getter
+- defineComputed：vm 上添加名称为 fullString 的 getter
 
 ## 创建 lazy watcher
 
@@ -82,6 +82,7 @@ export default class Watcher {
       this.lazy = !!options.lazy
     }
     if (typeof expOrFn === 'function') {
+      // 这里
       this.getter = expOrFn
     } else {
       this.getter = parsePath(expOrFn)
@@ -96,12 +97,12 @@ export default class Watcher {
 
 expOrFn 是一个函数，所以 this.getter 是示例代码中的 fullString 方法。构造函数的重点在于 options: { lazy: true }，创建了一个 lazy watcher。lazy watcher 的懒惰体现在两点：
 
-- 构造函数中的懒惰：this.value = this.lazy ? undefined : this.get()，因 lazy 为 true，不会像普通 watcher 一样，立即调用 get
+- 构造函数中的懒惰：this.value = this.lazy ? undefined : this.get()，因 lazy 为 true，不会像普通 watcher 一样，立即调用 get，触发依赖收集
 - watcher 更新时的懒惰：dep.notify 通知 watcher 更新时，它懒，它不更新，[源码如下](https://github.com/vuejs/vue/blob/e90cc60c4718a69e2c919275a999b7370141f3bf/src/core/observer/watcher.js#L164)：
 
 ```C++
 update () {
-  // 让它更新，它偏不更新，它懒
+  // 让它更新，它偏不更新，因为它懒
   if (this.lazy) {
     // 计算属性是基于它们的响应式依赖进行缓存的
     // dirty: true，表示缓存失效，
@@ -114,7 +115,7 @@ update () {
 }
 ```
 
-## vm 上添加 name 为 fullString 的 getter
+## vm 上添加名称为 fullString 的 getter
 
 [defineComputed](https://github.com/vuejs/vue/blob/e90cc60c4718a69e2c919275a999b7370141f3bf/src/core/instance/state.js#L210) 源码如下：
 
@@ -141,7 +142,7 @@ export function defineComputed (
 }
 ```
 
-defineComputed 在 vm 上定义了 name 为 fullString 的 getter。getter 取决于 [createComputedGetter](https://github.com/vuejs/vue/blob/e90cc60c4718a69e2c919275a999b7370141f3bf/src/core/instance/state.js#L241) 的返回结果，源码如下：
+defineComputed 在 vm 上定义了名称为 fullString 的 getter。getter 取决于 [createComputedGetter](https://github.com/vuejs/vue/blob/e90cc60c4718a69e2c919275a999b7370141f3bf/src/core/instance/state.js#L241) 的返回结果，源码如下：
 
 ```C++
 function createComputedGetter (key) {
@@ -153,7 +154,7 @@ function createComputedGetter (key) {
 
 ## 渲染函数触发依赖收集
 
-从 [mountComponent](https://github.com/vuejs/vue/blob/e90cc60c4718a69e2c919275a999b7370141f3bf/src/core/instance/lifecycle.js#L197) 开始，创建一个和渲染函数关联的 watcher，源码如下：
+在 [mountComponent](https://github.com/vuejs/vue/blob/e90cc60c4718a69e2c919275a999b7370141f3bf/src/core/instance/lifecycle.js#L197) 中，创建一个和渲染函数相关联的 watcher，源码如下：
 
 ```C++
 updateComponent = () => {
@@ -184,7 +185,7 @@ function createComputedGetter (key) {
       if (watcher.dirty) {
         watcher.evaluate()
       }
-      // 依赖收集，这里收集的是渲染函数的 watcher
+      // 依赖收集，这里收集的是与渲染函数相关联的 watcher
       if (Dep.target) {
         watcher.depend()
       }
@@ -195,7 +196,7 @@ function createComputedGetter (key) {
 }
 ```
 
-watcher.dirty 为 true，表示缓存失效，需要重新计算 watcher 的 值，[watcher.evaluate](https://github.com/vuejs/vue/blob/e90cc60c4718a69e2c919275a999b7370141f3bf/src/core/observer/watcher.js#L210) 源码如下：
+watcher.dirty 为 true，表示缓存失效，需要重新计算 watcher 的值，[watcher.evaluate](https://github.com/vuejs/vue/blob/e90cc60c4718a69e2c919275a999b7370141f3bf/src/core/observer/watcher.js#L210) 源码如下：
 
 ```C++
 evaluate () {
@@ -221,7 +222,7 @@ get () {
 }
 ```
 
-进入 get 方法后，pushTarget 会改变 Dep.target，此时 Dep.target 是和 computed 属性 fullString 相关联的 watcher。this.getter 是前端定义的 fullString 方法，它会读取 vm.first 和 vm.second，触发两次依赖收集，收集到的是和 computed 属性 fullString 相关联的 watcher。get 方法调用完成后 watch 的值是 'first-second'，dirty 为 false，缓存生效，Dep.target 的值恢复到和渲染函数相关联的 watcher。
+进入 get 方法后，pushTarget 会改变 Dep.target，此时 Dep.target 是和 computed 属性 fullString 相关联的 watcher。this.getter 是前端定义的 fullString 方法，它会读取 vm.first 和 vm.second，触发两次依赖收集，收集到的是和 computed 属性 fullString 相关联的 watcher。get 方法调用完成后，该 watcher 的值是 'first-second'，dirty 为 false，computed 缓存生效，Dep.target 的值恢复到和渲染函数相关联的 watcher。
 
 [pushTarget](https://github.com/vuejs/vue/blob/e90cc60c4718a69e2c919275a999b7370141f3bf/src/core/observer/dep.js#L58) 和 [popTarget](https://github.com/vuejs/vue/blob/e90cc60c4718a69e2c919275a999b7370141f3bf/src/core/observer/dep.js#L63) 源码如下，可以理解为一个栈，Dep.target 保存的是栈顶的 watcher。
 
@@ -239,7 +240,7 @@ export function popTarget () {
 }
 ```
 
-fullString 的 getter 还没完成，代码走到了这里，此时 Dep.target 的值恢复到和渲染函数相关联的 watcher，又开始依赖收集，这里收集的是和渲染函数相关联的 watcher。
+fullString 的 getter 还没完成，代码走到了这里，此时 Dep.target 的值是和渲染函数相关联的 watcher，又开始依赖收集，这里收集的是和渲染函数相关联的 watcher。
 
 ```C++
 function createComputedGetter (key) {
@@ -268,7 +269,7 @@ setTimeout(_ => {
 }, 5000)
 ```
 
-和运行时有关的源码前端都看过了，this.first = 'abc'，间接调用了两个 watcher，第一个 watcher 与 computed 属性有关，执行的代码是：
+和运行时有关的源码前面都看过了，vm.first = 'abc'，间接调用了两个 watcher，第一个 watcher 与 computed 属性有关，执行的代码是：
 
 ```C++
 update () {
@@ -295,7 +296,7 @@ function createComputedGetter (key) {
     // _computedWatchers: initComputed 函数里写，这里读
     const watcher = this._computedWatchers && this._computedWatchers[key]
     if (watcher) {
-      // 如果缓存失效，重新计算
+      // 此时 dirty 为 true，重新计算 computed fullString 的值
       if (watcher.dirty) {
         watcher.evaluate()
       }
@@ -306,6 +307,21 @@ function createComputedGetter (key) {
       // 返回 vm.fullString 的结果 
       return watcher.value
     }
+  }
+}
+```
+
+中关村某厂问 computed 中能否使用 async 函数，答案是不能。原因是 async 函数返回 promise，下面代码中的 value 是 promise，会导致界面展示错误。
+
+```C++
+get () {
+  pushTarget(this)
+  let value
+  const vm = this.vm
+  try {
+    // 此时 this.getter 是 async 函数
+    // value 是 promise，界面展示错误
+    value = this.getter.call(vm, vm)
   }
 }
 ```
