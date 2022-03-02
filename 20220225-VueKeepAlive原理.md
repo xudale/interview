@@ -41,7 +41,15 @@ new Vue({
 })
 ```
 
-从 [Vue.prototype.init](https://github.com/vuejs/vue/blob/v2.6.10/src/core/instance/init.js#L16) 开始，源码如下：
+## render 函数
+
+从 keep-alive 组件的 [render](https://github.com/vuejs/vue/blob/e90cc60c4718a69e2c919275a999b7370141f3bf/src/core/components/keep-alive.js) 开始，源码如下：
+
+## patch 阶段的 createComponent
+
+## init hooks
+
+
 
 ```C++
 Vue.prototype._init = function (options?: Object) {
@@ -187,6 +195,13 @@ export function initInjections (vm: Component) {
 ## 总结
 
 ![provideInject](https://raw.githubusercontent.com/xudale/interview/master/assets/provideInject.jpeg)
+
+
+## 参考
+
+1.[彻底揭秘keep-alive原理](https://juejin.cn/post/6844903837770203144)
+
+
 
 
 
