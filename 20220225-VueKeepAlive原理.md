@@ -156,6 +156,13 @@ function appendChild (node: Node, child: Node) {
 
 vnode.componentInstance 是从缓存中取的，为真值。initComponent 会 vnode.elm = vnode.componentInstance.$el，将缓存中的 dom 节点赋值给 elm。insert 会调用浏览器 dom API，将 vnode.elm 插入 dom。
 
+## 总结
+
+keep-alive 核心原理就两句话：
+
+- render 阶段将缓存中的组件实例 componentInstance，赋值给子组件的 vnode，返回
+- patch 阶段将缓存中的子组件 dom 节点：vnode.componentInstance.$el，插入 dom
+
 ## 参考
 
 1.[彻底揭秘keep-alive原理](https://juejin.cn/post/6844903837770203144)
