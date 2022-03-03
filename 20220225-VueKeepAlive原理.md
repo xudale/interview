@@ -1,6 +1,6 @@
 # 20220225-Vue keep-alive 原理
 
-失业期间目前面试 7 家，出现 3 次，出现概率 42.86%。
+失业期间目前面试 8 家，出现 3 次，出现概率 42.86%。
 
 在 2022 年以前，我从来遇到过这道面试题，今年遇到过 3 次。因为 provide/inject 稍微有点冷门，我又确实没用过，所以每次我都回答不知道。为了吃饭，下次我一定要回答知道。
 
@@ -17,185 +17,144 @@ while(count--) {
 
 ```html
 <div id="app">
-  <son></son>
+  <keep-alive>
+    <son1 v-if="toggle"></son1>
+    <son2 v-else></son2>
+  </keep-alive>
 </div>
 ```
 
 ```C++
-let Son = Vue.extend({
-  template: '<h2>{{ fromParent }}</h2>',
-  inject: {
-    fromParent: {
-      default: 'default'
-    },
+let Son1 = Vue.extend({
+  template: '<input type="text" v-model="son1">',
+  data() {
+    return {
+      son1: 'son1'  
+    }
   }
 })
-new Vue({
+let Son2 = Vue.extend({
+  template: '<input type="text" v-model="son2">',
+  data() {
+    return {
+      son2: 'son2'  
+    }
+  }
+})
+const vm = new Vue({
   el: '#app',
-  provide: {
-    fromParent: '这个字段来自父组件',
-  },
   components: {
-    Son
+    Son1,
+    Son2
+  },
+  data: {
+    toggle: true
   }
 })
 ```
 
-## render 函数
+面试中从来没见过面试官问 include 和 exclude，所以就不贴相关代码了。假定 keep-alive 已经缓存了所有子组件。 
 
-从 keep-alive 组件的 [render](https://github.com/vuejs/vue/blob/e90cc60c4718a69e2c919275a999b7370141f3bf/src/core/components/keep-alive.js) 开始，源码如下：
+## render 阶段
 
-## patch 阶段的 createComponent
+keep-alive 组件有自定义 [render](https://github.com/vuejs/vue/blob/e90cc60c4718a69e2c919275a999b7370141f3bf/src/core/components/keep-alive.js#L83) 函数，源码如下：
 
-## init hooks
-
-
+假定 keep-alive 已经缓存了所有子组件。
 
 ```C++
-Vue.prototype._init = function (options?: Object) {
-  callHook(vm, 'beforeCreate')
-  // 初始化 inject
-  initInjections(vm)
-  initState(vm)
-  // 初始化 provide
-  initProvide(vm) 
-  callHook(vm, 'created')
-  if (vm.$options.el) {
-    vm.$mount(vm.$options.el)
-  }
-}
-```
-
-按照时间顺序，依次是父组件 initProvide，子组件 initInjections，子组件对象添加注入的属性
-
-
-## 父组件 initProvide
-
-父组件调用 [Vue.prototype.init](https://github.com/vuejs/vue/blob/v2.6.10/src/core/instance/init.js#L16)，因为父组件没有与 inject 相关的属性，所以调用 initInjections 直接返回，[initProvide](https://github.com/vuejs/vue/blob/e90cc60c4718a69e2c919275a999b7370141f3bf/src/core/instance/inject.js#L7) 源码如下：
-
-```C++
-export function initProvide (vm: Component) {
-  const provide = vm.$options.provide
-  if (provide) {
-    // 获取父组件的 provide，存储在父组件对象的 _provided 字段
-    // 本文示例 vm._provided: { fromParent: '这个字段来自父组件' }
-    vm._provided = typeof provide === 'function'
-      ? provide.call(vm)
-      : provide
-  }
-}
-```
-
-initProvide 获取构造函数参数的 provide 属性，存储在父组件对象的 \_provided 字段上。
-
-## 子组件 initInjections
-
-子组件也调用 [Vue.prototype.init](https://github.com/vuejs/vue/blob/v2.6.10/src/core/instance/init.js#L16)，因为子组件没有与 provide 相关的属性，所以调用 initProvide 直接返回，[initInjections](https://github.com/vuejs/vue/blob/e90cc60c4718a69e2c919275a999b7370141f3bf/src/core/instance/inject.js#L16) 源码如下：
-
-```C++
-export function initInjections (vm: Component) {
-  // 获取 inject 
-  const result = resolveInject(vm.$options.inject, vm)
-  if (result) {
-    toggleObserving(false)
-    Object.keys(result).forEach(key => {
-      /* istanbul ignore else */
-      if (process.env.NODE_ENV !== 'production') {
-        defineReactive(vm, key, result[key], () => {
-          warn(
-            `Avoid mutating an injected value directly since the changes will be ` +
-            `overwritten whenever the provided component re-renders. ` +
-            `injection being mutated: "${key}"`,
-            vm
-          )
-        })
-      } else {
-        defineReactive(vm, key, result[key])
-      }
-    })
-    toggleObserving(true)
-  }
-}
-```
-
-initInjections 调用 [resolveInject](https://github.com/vuejs/vue/blob/e90cc60c4718a69e2c919275a999b7370141f3bf/src/core/instance/inject.js#L39) 获取 inject，源码如下：
-
-```C++
-export function resolveInject (inject: any, vm: Component): ?Object {
-  // 本文示例 
-  // inject: {
-  //  fromParent: {
-  //    from: 'fromParent',
-  //    default: 'default'
-  //  }
-  // }
-  if (inject) {
-    const result = Object.create(null)
-    const keys = hasSymbol
-      ? Reflect.ownKeys(inject)
-      : Object.keys(inject)
-    // 遍历所有的 inject 中所有的 key
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i]
-      // 本文示例 provideKey: 'fromParent'
-      const provideKey = inject[key].from
-      let source = vm
-      // 类似 js 原型链的查找逻辑，在父组件上查找其 _provided 是否拥有 fromParent 属性
-      while (source) {
-        if (source._provided && hasOwn(source._provided, provideKey)) {
-          result[key] = source._provided[provideKey]
-          break
-        }
-        // 找不到，继续向上级父组件查找
-        source = source.$parent
+render () {
+  const slot = this.$slots.default
+  // 获取第一个子组件
+  const vnode: VNode = getFirstComponentChild(slot)
+  const componentOptions: ?VNodeComponentOptions = vnode && vnode.componentOptions
+  if (componentOptions) {
+    // check pattern
+    const name: ?string = getComponentName(componentOptions)
+    const { include, exclude } = this
+    // 如果不该被缓存，直接返回子组件 vnode
+    if (
+      // not included
+      (include && (!name || !matches(include, name))) ||
+      // excluded
+      (exclude && name && matches(exclude, name))
+    ) {
+      return vnode
+    }
+    // cache 是缓存对象
+    const { cache, keys } = this
+    const key: ?string = vnode.key == null
+      // same constructor may get registered as different local components
+      // so cid alone is not enough (#3269)
+      ? componentOptions.Ctor.cid + (componentOptions.tag ? `::${componentOptions.tag}` : '')
+      : vnode.key
+    // 判断是否在缓存中
+    if (cache[key]) {
+      // 将缓存中的 componentInstance 赋值给 vnode.componentInstance
+      // vnode.componentInstance 是 Vue 的实例
+      vnode.componentInstance = cache[key].componentInstance
+      // make current key freshest
+      remove(keys, key)
+      keys.push(key)
+    } else {
+      cache[key] = vnode
+      keys.push(key)
+      // prune oldest entry
+      if (this.max && keys.length > parseInt(this.max)) {
+        pruneCacheEntry(cache, keys[0], keys, this._vnode)
       }
     }
-    // 本文示例 result: { fromParent: '这个字段来自父组件' }
-    return result
+    // 这个属性后面会用到
+    vnode.data.keepAlive = true
   }
+  // 返回子组件的 vnode
+  return vnode || (slot && slot[0])
 }
 ```
 
-resolveInject 的功能是获取子组件的 inject，核心逻辑是查找父组件的 \_provided 是否包含 key 为 fromParent 的属性，如果没有，继续向上一级父组件查找。
+render 的逻辑是根据 include 和 exclude 两个参数判断子组件是否应该被缓存。如果不该被缓存，返回子组件的 vnode，注意 keep-alive 组件不会产生真实的 dom 结点，所以会返回子组件的 vnode；如果组件应该被缓存，把缓存中的 componentInstance 赋值给 vnode，返回 vnode。说到底 cache 变量缓存的是组件实例 componentInstance。
 
-我猜测 initInjections 后面有 s 是因为子组件的 inject，可以来源于多个父组件的 \_provided。
+## patch 阶段的 
 
-## 子组件对象添加注入的属性
+在 patch 阶段，调用 [createComponent](https://github.com/vuejs/vue/blob/e90cc60c4718a69e2c919275a999b7370141f3bf/src/core/vdom/patch.js#L210)，源码如下：
 
-还是之前的代码。
+假定 keep-alive 已经缓存了所有子组件。
 
 ```C++
-export function initInjections (vm: Component) {
-  // 获取 inject 
-  const result = resolveInject(vm.$options.inject, vm)
-  if (result) {
-    toggleObserving(false)
-    Object.keys(result).forEach(key => {
-      if (process.env.NODE_ENV !== 'production') {
-        // 在子组件上定义 fromParent，并且给 fromParent 定义 setter，修改就报错
-        defineReactive(vm, key, result[key], () => {
-          warn(
-            `Avoid mutating an injected value directly since the changes will be ` +
-            `overwritten whenever the provided component re-renders. ` +
-            `injection being mutated: "${key}"`,
-            vm
-          )
-        })
-      } else {
-        defineReactive(vm, key, result[key])
+function createComponent (vnode, insertedVnodeQueue, parentElm, refElm) {
+  let i = vnode.data
+  if (isDef(i)) {
+    const isReactivated = isDef(vnode.componentInstance) && i.keepAlive
+    if (isDef(i = i.hook) && isDef(i = i.init)) {
+      i(vnode, false /* hydrating */)
+    }
+    if (isDef(vnode.componentInstance)) {
+      // componentInstance 是从缓存中取的，进入这个分支
+      initComponent(vnode, insertedVnodeQueue)
+      insert(parentElm, vnode.elm, refElm)
+      if (isTrue(isReactivated)) {
+        reactivateComponent(vnode, insertedVnodeQueue, parentElm, refElm)
       }
-    })
-    toggleObserving(true)
+      return true
+    }
   }
+}
+
+function initComponent (vnode, insertedVnodeQueue) {
+  // 将缓存中的 dom 对象赋值给 vnode.elm
+  vnode.elm = vnode.componentInstance.$el
+}
+
+function insert (parent, elm, ref) {
+  nodeOps.appendChild(parent, elm)
+}
+
+function appendChild (node: Node, child: Node) {
+  // 直接操作 dom
+  node.appendChild(child)
 }
 ```
 
-遍历 resolveInject 返回的对象，每一个 key 都调用 defineReactive，从此子组件 vm.fromParent 有了 getter 和 setter。
-
-## 总结
-
-![provideInject](https://raw.githubusercontent.com/xudale/interview/master/assets/provideInject.jpeg)
-
+vnode.componentInstance 是从缓存中取的，为真值。initComponent 会 vnode.elm = vnode.componentInstance.$el，将缓存中的 dom 节点赋值给 elm。insert 会调用浏览器 dom API，将 vnode.elm 插入 dom。
 
 ## 参考
 
