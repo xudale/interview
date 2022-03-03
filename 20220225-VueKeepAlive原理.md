@@ -98,7 +98,7 @@ render () {
 }
 ```
 
-render 的逻辑是根据 include 和 exclude 两个参数判断子组件是否应该被缓存。如果不该被缓存，返回子组件的 vnode，注意 keep-alive 组件不会产生真实的 dom 结点，所以会返回子组件的 vnode；如果组件应该被缓存，把缓存中的 componentInstance 赋值给 vnode，返回 vnode。说到底 cache 变量缓存的是组件实例 componentInstance。
+render 的逻辑是根据 include 和 exclude 两个参数判断子组件是否应该被缓存。如果不该被缓存，返回子组件的 vnode，注意 keep-alive 组件不会产生真实的 dom 结点，所以会返回子组件的 vnode；如果组件应该被缓存，把缓存中的 componentInstance 赋值给 vnode，返回 vnode。
 
 ## patch 阶段的 
 
@@ -147,8 +147,8 @@ vnode.componentInstance 是从缓存中取的，为真值。initComponent 会 vn
 
 keep-alive 核心原理就两句话：
 
-- render 阶段将缓存中的组件实例 componentInstance，赋值给子组件的 vnode，返回
-- patch 阶段将缓存中的子组件 dom 节点：vnode.componentInstance.$el，插入 dom
+- render 阶段从缓存中取出组件实例 componentInstance，赋值给子组件的 vnode，返回
+- patch 阶段将缓存中取出 dom 节点：vnode.componentInstance.$el，插入 dom
 
 ## 参考
 
