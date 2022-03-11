@@ -59,3 +59,4 @@ runQueue(queue, iterator, () => {
 ## 参考
 
 1.[Vue2.0生命周期（组件钩子函数与路由守卫）](https://segmentfault.com/a/1190000013956945)
+
