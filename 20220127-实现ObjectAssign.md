@@ -6,29 +6,29 @@ Object.assign() 方法用于将所有可枚举属性的值从一个或多个源�
 
 ```JavaScript
 Object.assign = function(target, ...sources) {
-	if (target == null) {
-		throw new Error('cant convert null or undefined to object')
-	}
-	for (let source of sources) {
-		if (source == null) {
-			continue
-		}
-		const descriptors =  Object.keys(source).reduce((descriptors, key) => {
-			descriptors[key] = Object.getOwnPropertyDescriptor(source, key)
-			return descriptors
-		}, {})
+  if (target == null) {
+    throw new Error('cant convert null or undefined to object')
+  }
+  for (let source of sources) {
+    if (source == null) {
+      continue
+    }
+    const descriptors =  Object.keys(source).reduce((descriptors, key) => {
+      descriptors[key] = Object.getOwnPropertyDescriptor(source, key)
+      return descriptors
+    }, {})
 
-		Object.getOwnPropertySymbols(source).reduce((descriptors, key) => {
-			const descriptor = Object.getOwnPropertyDescriptor(source, key)
-			if (descriptor.enumerable) {
-				descriptors[key] = descriptor
-			}
-			return descriptors
-		}, descriptors)
+    Object.getOwnPropertySymbols(source).reduce((descriptors, key) => {
+      const descriptor = Object.getOwnPropertyDescriptor(source, key)
+      if (descriptor.enumerable) {
+        descriptors[key] = descriptor
+      }
+      return descriptors
+    }, descriptors)
 
-		Object.defineProperties(target, descriptors)
-	}
-	return target
+    Object.defineProperties(target, descriptors)
+  }
+  return target
 }
 ```
 
@@ -38,8 +38,8 @@ Object.assign = function(target, ...sources) {
 const o1 = { a: 1 };
 const o2 = { [Symbol('foo')]: 2 };
 Object.defineProperty(o2, Symbol('x'), {
-	enumerable: false,
-	value: '33'
+  enumerable: false,
+  value: '33'
 })
 const o3 = {}
 const o4 = null
@@ -52,23 +52,23 @@ console.log(obj);
 
 ```JavaScript
 Object.assign = function(target, ...sources) {
-	if (target == null) {
-		throw new Error("cannot convert null or undefined to object")
-	}
-	sources.forEach(source => {
-		if (source == null) {
-			return
-		}
-		const descriptors = Reflect.ownKeys(source).reduce((descriptors, key) => {
-			const descriptor = Object.getOwnPropertyDescriptor(source, key)
-			if (descriptor.enumerable) {
-				descriptors[key] = descriptor
-			}
-			return descriptors
-		}, {})
-		Object.defineProperties(target, descriptors)
-	})
-	return target
+  if (target == null) {
+    throw new Error("cannot convert null or undefined to object")
+  }
+  sources.forEach(source => {
+    if (source == null) {
+      return
+    }
+    const descriptors = Reflect.ownKeys(source).reduce((descriptors, key) => {
+      const descriptor = Object.getOwnPropertyDescriptor(source, key)
+      if (descriptor.enumerable) {
+        descriptors[key] = descriptor
+      }
+      return descriptors
+    }, {})
+    Object.defineProperties(target, descriptors)
+  })
+  return target
 }
 ```
 
@@ -76,13 +76,13 @@ Object.assign = function(target, ...sources) {
 
 ```JavaScript
 Object.assign = function(target, ...args) {
-	for (let i = 0; i < args.length; i++) {
-		const cur = args[i]
-		Object.keys(cur).forEach(key => {
-			target[key] = cur[key]
-		})
-	}
-	return target
+  for (let i = 0; i < args.length; i++) {
+    const cur = args[i]
+    Object.keys(cur).forEach(key => {
+      target[key] = cur[key]
+    })
+  }
+  return target
 }
 ```
 
